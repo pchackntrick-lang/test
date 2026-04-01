@@ -1,0 +1,35 @@
+# Pull latest code on YOUR server and restart the bot via SSH.
+# GitHub Actions is the wrong place to host a 24/7 bot (job timeouts, runners stop when the job ends).
+# Typical flow: push to GitHub → this workflow SSHs into a VPS → git pull → restart systemd/pm2/screen.
+
+name: Deploy to VPS
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.repository }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            set -e
+            cd "${{ secrets.APP_DIR }}"
+            git fetch origin
+            git reset --hard origin/main
+            # Pick ONE restart style (uncomment / adapt):
+            # sudo systemctl restart stress-bot
+            # pm2 restart m || pm2 start m.py --name stress-bot --interpreter python3
+            # pkill -f 'python m.py' || true
+            # nohup ./run.sh > bot.log 2>&1 &

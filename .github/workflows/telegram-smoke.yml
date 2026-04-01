@@ -1,0 +1,54 @@
+# Quick test on GitHub-hosted runner — does NOT replace a 24/7 host.
+# 1) Confirms TELEGRAM_BOT_TOKEN works (getMe)
+# 2) Starts m.py for ~25s then kills it (polling begins; job still ends cleanly)
+
+name: Telegram smoke test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -r requirement.txt
+
+      - name: Check token (getMe)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python << 'PY'
+          import os, sys
+          import telebot
+
+          tok = (os.environ.get("TELEGRAM_BOT_TOKEN") or "").strip()
+          if not tok:
+              print("Add repository secret: TELEGRAM_BOT_TOKEN")
+              sys.exit(1)
+          me = telebot.TeleBot(tok).get_me()
+          print(f"OK — bot @{me.username} id={me.id}")
+          PY
+
+      - name: Boot m.py briefly (then stop)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_IDS: ${{ secrets.TELEGRAM_ADMIN_IDS }}
+        run: |
+          set +e
+          timeout 25s python m.py
+          code=$?
+          if [ "$code" -eq 124 ]; then
+            echo "Stopped after 25s (expected on CI — bot was running)"
+            exit 0
+          fi
+          echo "m.py exited early with code $code"
+          exit "$code"
