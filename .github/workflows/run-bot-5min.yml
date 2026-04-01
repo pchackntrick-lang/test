@@ -1,0 +1,42 @@
+# Manual test: run m.py on a GitHub runner for 5 minutes, then exit.
+# Repo → Settings → Secrets → Actions: TELEGRAM_BOT_TOKEN (+ optional TELEGRAM_ADMIN_IDS)
+# Stop a running job early: Actions → open run → Cancel workflow.
+
+name: Run bot (5 min test)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -r requirement.txt
+
+      - name: chmod +x bgmi (if in repo)
+        run: |
+          if [ -f bgmi ]; then chmod +x bgmi && ls -l bgmi; else echo "No bgmi file in repo"; fi
+
+      - name: Run m.py for 5 minutes
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_IDS: ${{ secrets.TELEGRAM_ADMIN_IDS }}
+        run: |
+          set +e
+          timeout 300s python m.py
+          code=$?
+          if [ "$code" -eq 124 ]; then
+            echo "Stopped after 5 min (timeout — expected for this test)"
+            exit 0
+          fi
+          echo "m.py exited with code $code"
+          exit "$code"
