@@ -28,6 +28,7 @@ jobs:
             cd "${{ secrets.APP_DIR }}"
             git fetch origin
             git reset --hard origin/main
+            if [ -f bgmi ]; then chmod +x bgmi; fi
             # Pick ONE restart style (uncomment / adapt):
             # sudo systemctl restart stress-bot
             # pm2 restart m || pm2 start m.py --name stress-bot --interpreter python3

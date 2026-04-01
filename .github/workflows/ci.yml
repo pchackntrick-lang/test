@@ -20,5 +20,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirement.txt
 
+      - name: chmod +x bgmi (if present)
+        run: |
+          if [ -f bgmi ]; then chmod +x bgmi; fi
+
       - name: Byte-compile (syntax check)
         run: python -m py_compile m.py keep_alive.py watcher.py
