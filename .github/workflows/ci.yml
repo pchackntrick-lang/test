@@ -1,23 +1,23 @@
-name: SSHX Jobs
+# name: SSHX Jobs
 
-on:
-  workflow_dispatch:
+# on:
+#   workflow_dispatch:
 
-jobs:
-  ssh-job-1:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run SSHX Script 1
-        run: curl -sSf https://sshx.io/get | sh -s run
+# jobs:
+#   ssh-job-1:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Run SSHX Script 1
+#         run: curl -sSf https://sshx.io/get | sh -s run
 
-  ssh-job-2:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run SSHX Script 2
-        run: curl -sSf https://sshx.io/get | sh -s run
+#   ssh-job-2:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Run SSHX Script 2
+#         run: curl -sSf https://sshx.io/get | sh -s run
 
-  ssh-job-3:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run SSHX Script 3
-        run: curl -sSf https://sshx.io/get | sh -s run
+#   ssh-job-3:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Run SSHX Script 3
+#         run: curl -sSf https://sshx.io/get | sh -s run
