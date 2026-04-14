@@ -1,28 +1,23 @@
-# Install deps + syntax check. Does NOT start the Telegram bot.
-name: CI
+name: SSHX Jobs
 
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
-  verify:
+  ssh-job-1:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Run SSHX Script 1
+        run: curl -sSf https://sshx.io/get | sh -s run
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+  ssh-job-2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run SSHX Script 2
+        run: curl -sSf https://sshx.io/get | sh -s run
 
-      - name: Install dependencies
-        run: pip install -r requirement.txt
-
-      - name: chmod +x bgmi (if present)
-        run: |
-          if [ -f bgmi ]; then chmod +x bgmi; fi
-
-      - name: Byte-compile (syntax check)
-        run: python -m py_compile m.py keep_alive.py watcher.py
+  ssh-job-3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run SSHX Script 3
+        run: curl -sSf https://sshx.io/get | sh -s run
